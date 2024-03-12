@@ -130,13 +130,16 @@ const createTableRowContent = (element: ToDo): void => {
     const change: string = (event.target as HTMLSelectElement).value
     if (change === 'DONE') {
       stageChange(Stage.Stage.DONE, select.id)
-      select.style.backgroundColor = 'rgb(34 197 94)'
+      select.classList.remove('bg-orange-500')
+      select.classList.add('bg-green-500')
     } else if (change === 'IN_PROGRESS') {
       stageChange(Stage.Stage.IN_PROGRESS, select.id)
-      select.style.backgroundColor = 'rgb(249 115 22)'
+      select.classList.remove('bg-green-500')
+      select.classList.add('bg-orange-500')
     } else {
       stageChange(Stage.Stage.PENDING, select.id)
-      select.style.backgroundColor = ''
+      select.classList.remove('bg-green-500')
+      select.classList.remove('bg-orange-500')
     }
   })
 
