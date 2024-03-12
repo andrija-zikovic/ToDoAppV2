@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+select {
+    @apply py-1;
+    @apply px-4;
+    @apply border;
+    @apply border-gray-700;
+    @apply rounded-md;
+}
+
+select:hover,
+select:focus,
+select:active {
+    @apply bg-slate-200;
+    @apply text-black;
+    @apply border-violet-500;
+    @apply shadow-md;
+}
+
+button {
+    @apply py-1;
+    @apply px-4;
+    @apply border;
+    @apply border-gray-700;
+    @apply rounded-md;
+}
+
+button:hover,
+button:focus,
+button:active {
+    @apply bg-slate-200;
+    @apply text-black;
+    @apply border-violet-500;
+    @apply shadow-md;
+    
+}
+
+input:hover,
+input:focus,
+input:active {
+    @apply bg-slate-200;
+    @apply text-black;
+    @apply border-violet-500;
+    @apply shadow-md;
+}
