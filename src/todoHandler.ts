@@ -130,10 +130,10 @@ const createTableRowContent = (element: ToDo): void => {
     const change: string = (event.target as HTMLSelectElement).value
     if (change === 'DONE') {
       stageChange(Stage.Stage.DONE, select.id)
-      select.style.backgroundColor = 'rgb(34 197 94 / var(--tw-bg-opacity))'
+      select.style.backgroundColor = 'rgb(34 197 94)'
     } else if (change === 'IN_PROGRESS') {
       stageChange(Stage.Stage.IN_PROGRESS, select.id)
-      select.style.backgroundColor = 'rgb(249 115 22 / var(--tw-bg-opacity))'
+      select.style.backgroundColor = 'rgb(249 115 22)'
     } else {
       stageChange(Stage.Stage.PENDING, select.id)
       select.style.backgroundColor = ''
