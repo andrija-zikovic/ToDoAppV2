@@ -13,10 +13,12 @@ import dayjs from 'dayjs'
 renderTable()
 
 const createForm: HTMLFormElement | null = document.querySelector('#createForm')
+
 createForm?.addEventListener('submit', (e: Event) => {
+  console.log('submit')
   e.preventDefault()
   const formData: FormData = new FormData(createForm)
-  const description: string = formData.get('description') as string
+  const description = formData.get('description') as string
   createToDo(description)
   createForm.reset()
 })

@@ -10,5 +10,8 @@
     },
     "ignorePatterns":["tailwind.config.ts"],
     "rules": {
+        "@typescript-eslint/no-non-null-assertion": "off",
+        "@typescript-eslint/strict-boolean-expressions": "off",
+        "@typescript-eslint/strict-string-expressions": "off"
     }
 }
