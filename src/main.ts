@@ -22,8 +22,8 @@ createForm?.addEventListener('submit', (e: Event) => {
     createForm.reset()
 })
 
-const deleteButtons: NodeListOf<HTMLButtonElement> | null =
-    document.querySelectorAll('.deleteButton')
+const deleteButtons: NodeListOf<HTMLButtonElement> | null = document.querySelectorAll('.deleteButton')
+
 deleteButtons?.forEach((button: HTMLButtonElement) => {
     button.addEventListener('click', (e: Event) => {
         const id: string = (e.target as HTMLButtonElement).id
@@ -31,8 +31,7 @@ deleteButtons?.forEach((button: HTMLButtonElement) => {
     })
 })
 
-const selectInputs: NodeListOf<HTMLSelectElement> | null =
-    document.querySelectorAll('.selectInput')
+const selectInputs: NodeListOf<HTMLSelectElement> | null = document.querySelectorAll('.selectInput')
 
 selectInputs.forEach((select: HTMLSelectElement) => {
     select.addEventListener('change', (e: Event) => {
@@ -49,14 +48,14 @@ selectInputs.forEach((select: HTMLSelectElement) => {
         }
     })
 })
-                
+
 const sortButtons: NodeListOf<HTMLButtonElement> | null =
     document.querySelectorAll('.sort')
 
 sortButtons.forEach((button: HTMLButtonElement) => {
     button?.addEventListener('click', () => {
-        const filterBy = button.textContent ?? ''
-        filterByStage(filterBy.trim())
+        const filterBy = button.value 
+        filterByStage(filterBy)
     })
 })
 

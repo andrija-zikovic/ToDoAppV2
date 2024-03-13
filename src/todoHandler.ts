@@ -25,7 +25,7 @@ if (tableBody === null) {
 
 let currentTable: TToDo[]
 
-const renderMessage = (message: string, status = MessageStatus.DEFAULT) => {
+const renderMessage = (message: string, status = MessageStatus.DEFAULT.toUpperCase()) => {
     const messageBoxElement = document.querySelector('.messageBox')
     const messageElement = document.querySelector('.message')
 
@@ -194,7 +194,7 @@ const renderTable = (newTable = toDos, message = 'No ToDos to show!'): void => {
     }
 
     if (newTable.length === 0) {
-        renderMessage(message)
+        renderMessage(message, MessageStatus.DEFAULT)
     } else {
         newTable.forEach((ToDo) => {
             createTableRowContent(ToDo)
@@ -248,6 +248,7 @@ const filterByStage = (stage: string) => {
     if (stage === 'All') {
         renderTable(toDos)
     } else {
+        console.log(stage)
         const filteredTable = toDos.filter((toDo) => toDo.stage === stage)
         renderTable(filteredTable)
     }

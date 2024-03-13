@@ -5,9 +5,9 @@ const MessageStatus = {
 } as const
 
 const MessageStatusColors = {
-    SUCCESS: 'rgb(34 197 94)',
-    ERROR: 'rgb(252 165 165)',
-    DEFAULT: 'rgb(226 232 240)',
+    SUCCESS: 'rgb(34, 197, 94)',
+    ERROR: 'rgb(252, 165, 165)',
+    DEFAULT: 'rgb(255, 255, 255)',
 } as const
 
 export { MessageStatus, MessageStatusColors }
