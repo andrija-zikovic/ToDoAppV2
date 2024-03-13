@@ -34,7 +34,6 @@ button:active {
     @apply text-black;
     @apply border-violet-500;
     @apply shadow-md;
-    
 }
 
 input:hover,

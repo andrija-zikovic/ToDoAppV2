@@ -4,258 +4,287 @@ import downArrow from './icons/downArrow.svg'
 import upArrow from './icons/upArrow.svg'
 import dateDown from './icons/dateDown.svg'
 import dateUp from './icons/dateUp.svg'
-import Stage from './stage'
+import { Stage, SortStage, StageColors } from './enums/stages'
+import { Options, OptionsNumber } from './enums/options'
+import { MessageStatus, MessageStatusColors } from './enums/status'
 import { localStorageWrapper } from './storages/localStorageWrapper'
 
-interface TToDo { id: string, description: string, stage: string, created_at: number }
+interface TToDo {
+    id: string
+    description: string
+    stage: string
+    created_at: number
+}
 
 let tableBody = document.querySelector('.tableBody')
 
 if (tableBody === null) {
-  tableBody = document.createElement('div')
-  tableBody.classList.add('tableBody')
+    tableBody = document.createElement('div')
+    tableBody.classList.add('tableBody')
 }
 
 let currentTable: TToDo[]
 
-const renderMessage = (message: string, status: string) => {
-  const messageBoxElement = document.querySelector('.messageBox')
-  const messageElement = document.querySelector('.message')
+const renderMessage = (message: string, status = MessageStatus.DEFAULT) => {
+    const messageBoxElement = document.querySelector('.messageBox')
+    const messageElement = document.querySelector('.message')
 
-  if (messageBoxElement === null || messageElement === null) return
-  messageElement!.textContent = message.toLocaleUpperCase()
-  messageBoxElement!.classList.remove('hidden')
-  messageBoxElement!.classList.add('flex')
+    if (messageBoxElement === null || messageElement === null) return
+    messageElement!.textContent = message.toLocaleUpperCase()
+    messageBoxElement!.classList.remove('hidden')
+    messageBoxElement!.classList.add('flex')
 
-  const messageStatus = {
-    success: 'rgb(34 197 94)',
-    error: 'rgb(252 165 165)',
-    default: 'rgb(226 232 240)'
-  }[status]
+    messageBoxElement!.setAttribute(
+        'style',
+        `background-color: ${MessageStatusColors[status as keyof typeof MessageStatusColors]}`
+    )
 
-  messageBoxElement!.setAttribute('style', `background-color: ${messageStatus}`)
-
-  setTimeout(() => {
-    messageBoxElement!.classList.remove('flex')
-    messageBoxElement!.classList.add('hidden')
-  }, 3000)
+    setTimeout(() => {
+        messageBoxElement!.classList.remove('flex')
+        messageBoxElement!.classList.add('hidden')
+    }, 3000)
 }
 
 let toDos: TToDo[] = localStorageWrapper.getItem('toDos') ?? []
 
 const deleteToDo = (id: string) => {
-  const select = document.querySelector(`#select${id}`) as HTMLSelectElement
-  const stage = select ? select.value : ''
+    const select = document.querySelector(`#select${id}`) as HTMLSelectElement
+    const stage = select.value
 
-  if (stage === 'DONE') {
-    toDos = toDos.filter((toDo) => toDo.id !== id)
-    localStorageWrapper.setItem('toDos', toDos)
+    if (stage === Stage.DONE) {
+        toDos = toDos.filter((toDo) => toDo.id !== id)
+        localStorageWrapper.setItem('toDos', toDos)
 
-    currentTable = currentTable.filter((toDo) => toDo.id !== id)
+        currentTable = currentTable.filter((toDo) => toDo.id !== id)
 
-    const rowToDelete = document.querySelector(`#row${id}`)
-    rowToDelete?.remove()
-    
-    renderMessage('Task deleted successfully!', 'success')
-  } else {
-    renderMessage('You can only delete a task that is done', 'error')
-  }
-}
+        const rowToDelete = document.querySelector(`#row${id}`)
+        rowToDelete?.remove()
 
-const returnOptionIndex = (option: string) => {
-  const optionNumber = {
-    Pending: 0,
-    InProgress: 1,
-    Done: 2
-  }[option]
-
-  return optionNumber
-}
-
-const options: object = {
-  PENDING: 'Pending',
-  IN_PROGRESS: 'In Progress',
-  DONE: 'Done'
+        renderMessage(
+            'Task deleted successfully!',
+            MessageStatus.SUCCESS.toUpperCase()
+        )
+    } else {
+        renderMessage(
+            'You can only delete a task that is done',
+            MessageStatus.ERROR.toUpperCase()
+        )
+    }
 }
 
 const formatDate = (timestamp: number) => {
-  return dayjs(timestamp).format('DD. MM. YYYY. HH:mm')
+    return dayjs(timestamp).format('DD. MM. YYYY. HH:mm')
 }
 
 const createTableRowContent = (element: TToDo): void => {
-  const tableRow = createDiv()
-  tableRow.classList.add('grid', 'grid-cols-2', 'size-full', 'border-2', 'dark:border-rose-300', 'border-grey-300', 'py-3', 'gap-y-2', 'justify-items-center', 'items-center', 'md:grid-cols-4')
-  tableRow.setAttribute('id', `row${element.id}`)
+    const tableRow = createDiv()
+    tableRow.classList.add(
+        'grid',
+        'grid-cols-2',
+        'size-full',
+        'border-2',
+        'dark:border-rose-300',
+        'border-grey-300',
+        'py-3',
+        'gap-y-2',
+        'justify-items-center',
+        'items-center',
+        'md:grid-cols-4'
+    )
+    tableRow.setAttribute('id', `row${element.id}`)
 
-  const select = document.createElement('select')
+    const select = document.createElement('select')
 
-  select.setAttribute('id', `select${element.id}`)
-  select.classList.add('dark:border-rose-300', 'dark:bg-rose-300', 'row-start-3', 'row-end-4', 'col-start-1', 'col-end-2', 'md:row-auto', 'md:col-auto')
+    select.setAttribute('id', `select${element.id}`)
+    select.classList.add(
+        'dark:border-rose-300',
+        'dark:bg-rose-300',
+        'row-start-3',
+        'row-end-4',
+        'col-start-1',
+        'col-end-2',
+        'md:row-auto',
+        'md:col-auto'
+    )
 
-  for (const [key, value] of Object.entries(options)) {
-    const optionElement = document.createElement('option')
-    optionElement.value = key
-    optionElement.textContent = value
-    select.appendChild(optionElement)
-  }
-
-  const stage = element.stage.replace(/\s/g, '')
-
-  select.selectedIndex = returnOptionIndex(stage) as number
-
-  const stages = {
-    Done: 'bg-green-500',
-    InProgress: 'bg-orange-500',
-    Pending: ''
-  }[stage]
-  
-  stages ? select.classList.add(`${stages}`) : null
-
-  select.addEventListener('change', (event) => {
-    const change: string = (event.target as HTMLSelectElement).value
-    if (change === 'DONE') {
-      stageChange(Stage.Stage.DONE, select.id)
-      select.classList.remove('bg-orange-500')
-      select.classList.add('bg-green-500')
-    } else if (change === 'IN_PROGRESS') {
-      stageChange(Stage.Stage.IN_PROGRESS, select.id)
-      select.classList.remove('bg-green-500')
-      select.classList.add('bg-orange-500')
-    } else {
-      stageChange(Stage.Stage.PENDING, select.id)
-      select.classList.remove('bg-green-500')
-      select.classList.remove('bg-orange-500')
+    for (const [key, value] of Object.entries(Options)) {
+        const optionElement = document.createElement('option')
+        optionElement.value =
+            Object.values(Stage)[Object.keys(Options).indexOf(key)]
+        optionElement.textContent = value
+        select.appendChild(optionElement)
     }
-  })
 
-  tableRow.appendChild(select)
+    const stage = element.stage.toUpperCase()
 
-  const description = createDiv()
-  description.textContent = element.description
-  description.classList.add('row-start-1', 'row-end-2', 'col-start-1', 'col-end-3', 'text-xl', 'md:row-auto', 'md:col-auto')
-  tableRow.appendChild(description)
+    select.selectedIndex = OptionsNumber[stage as keyof typeof OptionsNumber]
 
-  const date = createDiv()
-  date.textContent = formatDate(element.created_at)
-  date.classList.add('row-start-2', 'row-end-3', 'col-start-1', 'col-end-3', 'bg-', 'md:row-auto', 'md:col-auto')
-  tableRow.appendChild(date)
+    select.classList.add(`${StageColors[stage as keyof typeof StageColors]}`)
 
-  const deleteButton = document.createElement('button')
+    select.addEventListener('change', (event) => {
+        const change: string = (event.target as HTMLSelectElement).value
 
-  deleteButton.setAttribute('id', element.id)
-  deleteButton.classList.add('bg-red-400')
-  deleteButton.textContent = 'Delete'
+        if (change === Stage.DONE) {
+            stageChange(Stage.DONE, select.id)
 
-  deleteButton.addEventListener('click', () => {
-    deleteToDo(element.id)
-  })
+            select.classList.remove(StageColors.IN_PROGRESS)
+            select.classList.add(StageColors.DONE)
+        } else if (change === Stage.IN_PROGRESS) {
+            stageChange(Stage.IN_PROGRESS, select.id)
 
-  tableRow.appendChild(deleteButton)
-  if (tableBody !== null) {
-    const firstChild = tableBody.firstChild as HTMLDivElement
-    tableBody.insertBefore(tableRow, firstChild)
-  }
+            select.classList.remove(StageColors.DONE)
+            select.classList.add(StageColors.IN_PROGRESS)
+        } else {
+            stageChange(Stage.PENDING, select.id)
+
+            select.classList.remove(StageColors.DONE)
+            select.classList.remove(StageColors.IN_PROGRESS)
+        }
+    })
+
+    tableRow.appendChild(select)
+
+    const description = createDiv()
+    description.textContent = element.description
+    description.classList.add(
+        'row-start-1',
+        'row-end-2',
+        'col-start-1',
+        'col-end-3',
+        'text-xl',
+        'md:row-auto',
+        'md:col-auto'
+    )
+    tableRow.appendChild(description)
+
+    const date = createDiv()
+    date.textContent = formatDate(element.created_at)
+    date.classList.add(
+        'row-start-2',
+        'row-end-3',
+        'col-start-1',
+        'col-end-3',
+        'bg-',
+        'md:row-auto',
+        'md:col-auto'
+    )
+    tableRow.appendChild(date)
+
+    const deleteButton = document.createElement('button')
+
+    deleteButton.setAttribute('id', element.id)
+    deleteButton.classList.add('bg-red-400')
+    deleteButton.textContent = 'Delete'
+
+    deleteButton.addEventListener('click', () => {
+        deleteToDo(element.id)
+    })
+
+    tableRow.appendChild(deleteButton)
+    if (tableBody !== null) {
+        const firstChild = tableBody.firstChild as HTMLDivElement
+        tableBody.insertBefore(tableRow, firstChild)
+    }
 }
 
-const renderTable = (
-  newTable = toDos,
-  message = 'No ToDos to show!'
-): void => {
-  currentTable = newTable
-  if (tableBody !== null) {
-    tableBody.innerHTML = ''
-  }
+const renderTable = (newTable = toDos, message = 'No ToDos to show!'): void => {
+    currentTable = newTable
+    if (tableBody !== null) {
+        tableBody.innerHTML = ''
+    }
 
-  if (newTable.length === 0) {
-    renderMessage(message, 'default')
-  } else {
-    newTable.forEach((ToDo) => {
-      createTableRowContent(ToDo)
-    })
-  }
+    if (newTable.length === 0) {
+        renderMessage(message)
+    } else {
+        newTable.forEach((ToDo) => {
+            createTableRowContent(ToDo)
+        })
+    }
 }
 
 const createToDo = (description: string) => {
-  const newToDo: TToDo = {
-    id: uuidv4(),
-    description,
-    stage: Stage.Stage.PENDING,
-    created_at: dayjs().valueOf()
-  }
+    const newToDo: TToDo = {
+        id: uuidv4(),
+        description,
+        stage: Stage.PENDING,
+        created_at: dayjs().valueOf(),
+    }
 
-  toDos.push(newToDo)
+    toDos.push(newToDo)
 
-  localStorageWrapper.setItem('toDos', toDos)
+    localStorageWrapper.setItem('toDos', toDos)
 
-  createTableRowContent(newToDo)
+    createTableRowContent(newToDo)
 }
 
 const stageChange = (stage: string, id: string) => {
-  const realId: string = id.slice(6)
-  const toDo = toDos.find((toDo) => toDo.id === realId)
-  const currentTableToDo = currentTable.find((toDo) => toDo.id === realId)
-  
-  if (toDo === undefined || currentTableToDo === undefined) return
-  
-  toDo.stage = stage
-  localStorageWrapper.setItem('toDos', toDos)
-  
-  currentTableToDo.stage = stage
+    console.log(stage)
+    const realId: string = id.slice(6)
+    const toDo = toDos.find((toDo) => toDo.id === realId)
+    const currentTableToDo = currentTable.find((toDo) => toDo.id === realId)
+
+    if (toDo === undefined || currentTableToDo === undefined) return
+
+    toDo.stage = stage
+    localStorageWrapper.setItem('toDos', toDos)
+
+    currentTableToDo.stage = stage
 }
 
 const createDiv = (): HTMLDivElement => {
-  return document.createElement('div')
+    return document.createElement('div')
 }
 
 const renderTime = () => {
-  setInterval(() => {
-    const time = dayjs().format('HH : mm : ss')
-    const dateElement: HTMLDivElement | null = document.querySelector('#time')
-    if (dateElement === null) return
-    dateElement.textContent = time
-  }, 1000)
+    setInterval(() => {
+        const time = dayjs().format('HH : mm : ss')
+        const dateElement: HTMLDivElement | null =
+            document.querySelector('#time')
+        if (dateElement === null) return
+        dateElement.textContent = time
+    }, 1000)
 }
 
 const filterByStage = (stage: string) => {
-  if (stage === 'All') {
-    renderTable(toDos)
-  } else {
-    const filteredTable = toDos.filter((toDo) => toDo.stage === stage)
-    renderTable(filteredTable)
-  }
+    if (stage === 'All') {
+        renderTable(toDos)
+    } else {
+        const filteredTable = toDos.filter((toDo) => toDo.stage === stage)
+        renderTable(filteredTable)
+    }
 }
 
 const sortByDate = (sort: string, element: HTMLButtonElement) => {
-  if (sort === 'Newest') {
-    currentTable.sort((a, b) => b.created_at - a.created_at)
+    if (sort === SortStage.NEWEST) {
+        currentTable.sort((a, b) => b.created_at - a.created_at)
 
-    element.value = 'Oldest'
-    element.innerHTML = ''
+        element.value = SortStage.OLDEST
+        element.innerHTML = ''
 
-    const img = document.createElement('img')
-    img.src = element.id === 'sortDateMobile' ? dateUp : upArrow
+        const img = document.createElement('img')
+        img.src = element.id === 'sortDateMobile' ? dateUp : upArrow
 
-    element.appendChild(img)
-  } else {
-    currentTable.sort((a, b) => a.created_at - b.created_at)
+        element.appendChild(img)
+    } else {
+        currentTable.sort((a, b) => a.created_at - b.created_at)
 
-    element.value = 'Newest'
-    element.innerHTML = ''
+        element.value = SortStage.NEWEST
+        element.innerHTML = ''
 
-    const img = document.createElement('img')
-    img.src = element.id === 'sortDateMobile' ? dateDown : downArrow
+        const img = document.createElement('img')
+        img.src = element.id === 'sortDateMobile' ? dateDown : downArrow
 
-    element.appendChild(img)
-  }
-  renderTable(currentTable)
+        element.appendChild(img)
+    }
+    renderTable(currentTable)
 }
 
 export {
-  createToDo,
-  deleteToDo,
-  stageChange,
-  renderTime,
-  renderTable,
-  filterByStage,
-  sortByDate
+    createToDo,
+    deleteToDo,
+    stageChange,
+    renderTime,
+    renderTable,
+    filterByStage,
+    sortByDate,
 }

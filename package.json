@@ -1,29 +1,30 @@
 {
-  "name": "todoappv2",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview",
-    "check": "eslint . --ext .ts",
-    "check:fix": "eslint . --ext .ts --fix"
-  },
-  "devDependencies": {
-    "@types/uuid": "^9.0.8",
-    "@typescript-eslint/eslint-plugin": "^6.21.0",
-    "eslint": "^8.57.0",
-    "eslint-config-standard-with-typescript": "^43.0.1",
-    "eslint-plugin-import": "^2.29.1",
-    "eslint-plugin-n": "^16.6.2",
-    "eslint-plugin-promise": "^6.1.1",
-    "tailwindcss": "^3.4.1",
-    "typescript": "^5.3.3",
-    "vite": "^5.1.4"
-  },
-  "dependencies": {
-    "dayjs": "^1.11.10",
-    "uuid": "^9.0.1"
-  }
+    "name": "todoappv2",
+    "private": true,
+    "version": "0.0.0",
+    "type": "module",
+    "scripts": {
+        "dev": "vite",
+        "build": "tsc && vite build",
+        "preview": "vite preview",
+        "check": "eslint . --ext .ts | npx prettier . --check",
+        "check:fix": "eslint . --ext .ts --fix | npx prettier . --write"
+    },
+    "devDependencies": {
+        "@types/uuid": "^9.0.8",
+        "@typescript-eslint/eslint-plugin": "^6.21.0",
+        "eslint": "^8.57.0",
+        "eslint-config-standard-with-typescript": "^43.0.1",
+        "eslint-plugin-import": "^2.29.1",
+        "eslint-plugin-n": "^16.6.2",
+        "eslint-plugin-promise": "^6.1.1",
+        "prettier": "3.2.5",
+        "tailwindcss": "^3.4.1",
+        "typescript": "^5.3.3",
+        "vite": "^5.1.4"
+    },
+    "dependencies": {
+        "dayjs": "^1.11.10",
+        "uuid": "^9.0.1"
+    }
 }
