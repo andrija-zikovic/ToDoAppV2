@@ -49,9 +49,10 @@ selectInputs.forEach((select: HTMLSelectElement) => {
         }
     })
 })
-
+                
 const sortButtons: NodeListOf<HTMLButtonElement> | null =
     document.querySelectorAll('.sort')
+
 sortButtons.forEach((button: HTMLButtonElement) => {
     button?.addEventListener('click', () => {
         const filterBy = button.textContent ?? ''

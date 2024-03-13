@@ -218,7 +218,6 @@ const createToDo = (description: string) => {
 }
 
 const stageChange = (stage: string, id: string) => {
-    console.log(stage)
     const realId: string = id.slice(6)
     const toDo = toDos.find((toDo) => toDo.id === realId)
     const currentTableToDo = currentTable.find((toDo) => toDo.id === realId)
