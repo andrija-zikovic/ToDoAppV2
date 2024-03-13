@@ -25,7 +25,10 @@ if (tableBody === null) {
 
 let currentTable: TToDo[]
 
-const renderMessage = (message: string, status = MessageStatus.DEFAULT.toUpperCase()) => {
+const renderMessage = (
+    message: string,
+    status = MessageStatus.DEFAULT.toUpperCase()
+) => {
     const messageBoxElement = document.querySelector('.messageBox')
     const messageElement = document.querySelector('.message')
 
