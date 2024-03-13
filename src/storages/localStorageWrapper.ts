@@ -1,6 +1,5 @@
 export const localStorageWrapper = {
   getItem: <T = any>(key: string | null): T | null => {
-    console.log('getItem')
     if (!key) {
       return null
     }
@@ -14,7 +13,6 @@ export const localStorageWrapper = {
     }
   },
   setItem: (key: string, data: any) => {
-    console.log('setItem')
     if (!key) {
       return
     }

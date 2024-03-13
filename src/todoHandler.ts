@@ -7,7 +7,7 @@ import dateUp from './icons/dateUp.svg'
 import Stage from './stage'
 import { localStorageWrapper } from './storages/localStorageWrapper'
 
-type TToDo = { id: string, description: string, stage: string, created_at: number }
+interface TToDo { id: string, description: string, stage: string, created_at: number }
 
 let tableBody = document.querySelector('.tableBody')
 
@@ -18,12 +18,11 @@ if (tableBody === null) {
 
 let currentTable: TToDo[]
 
-const renderMessage = (message: string, status: string): void => {
-  
+const renderMessage = (message: string, status: string) => {
   const messageBoxElement = document.querySelector('.messageBox')
   const messageElement = document.querySelector('.message')
 
-  if (messageBoxElement || messageElement ) return
+  if (messageBoxElement === null || messageElement === null) return
   messageElement!.textContent = message.toLocaleUpperCase()
   messageBoxElement!.classList.remove('hidden')
   messageBoxElement!.classList.add('flex')
@@ -42,37 +41,35 @@ const renderMessage = (message: string, status: string): void => {
   }, 3000)
 }
 
-let toDos: TToDo[] = localStorageWrapper.getItem('toDos') || []
+let toDos: TToDo[] = localStorageWrapper.getItem('toDos') ?? []
 
-const deleteToDo = (id: string): void => {
-  console.log(id)
+const deleteToDo = (id: string) => {
   const select = document.querySelector(`#select${id}`) as HTMLSelectElement
   const stage = select ? select.value : ''
-  console.log(stage)
+
   if (stage === 'DONE') {
     toDos = toDos.filter((toDo) => toDo.id !== id)
-    currentTable = currentTable.filter((toDo) => toDo.id !== id)
+    localStorageWrapper.setItem('toDos', toDos)
 
-    localStorageWrapper.setItem('toDos', toDos);
+    currentTable = currentTable.filter((toDo) => toDo.id !== id)
 
     const rowToDelete = document.querySelector(`#row${id}`)
     rowToDelete?.remove()
+    
     renderMessage('Task deleted successfully!', 'success')
   } else {
     renderMessage('You can only delete a task that is done', 'error')
   }
 }
 
-
-const returnOptionIndex = (option: string ) => {
-  
+const returnOptionIndex = (option: string) => {
   const optionNumber = {
     Pending: 0,
     InProgress: 1,
     Done: 2
   }[option]
 
-  return optionNumber as number
+  return optionNumber
 }
 
 const options: object = {
@@ -81,7 +78,7 @@ const options: object = {
   DONE: 'Done'
 }
 
-const formatDate = (timestamp: number): string => {
+const formatDate = (timestamp: number) => {
   return dayjs(timestamp).format('DD. MM. YYYY. HH:mm')
 }
 
@@ -102,16 +99,17 @@ const createTableRowContent = (element: TToDo): void => {
     select.appendChild(optionElement)
   }
 
-  const stage = element.stage.replace(/\s/g, "") 
+  const stage = element.stage.replace(/\s/g, '')
 
-  select.selectedIndex = returnOptionIndex(stage)
+  select.selectedIndex = returnOptionIndex(stage) as number
 
   const stages = {
     Done: 'bg-green-500',
     InProgress: 'bg-orange-500',
     Pending: ''
   }[stage]
-  select.classList.add(`${stages ? stages : 'x'}`)
+  
+  stages ? select.classList.add(`${stages}`) : null
 
   select.addEventListener('change', (event) => {
     const change: string = (event.target as HTMLSelectElement).value
@@ -177,8 +175,7 @@ const renderTable = (
   }
 }
 
-const createToDo = (description: string): void => {
-  console.log('Create')
+const createToDo = (description: string) => {
   const newToDo: TToDo = {
     id: uuidv4(),
     description,
@@ -193,21 +190,24 @@ const createToDo = (description: string): void => {
   createTableRowContent(newToDo)
 }
 
-const stageChange = (stage: string, id: string): void => {
+const stageChange = (stage: string, id: string) => {
   const realId: string = id.slice(6)
   const toDo = toDos.find((toDo) => toDo.id === realId)
   const currentTableToDo = currentTable.find((toDo) => toDo.id === realId)
-  if (toDo === undefined || currentTableToDo === undefined ) return
+  
+  if (toDo === undefined || currentTableToDo === undefined) return
+  
   toDo.stage = stage
+  localStorageWrapper.setItem('toDos', toDos)
+  
   currentTableToDo.stage = stage
-  localStorageWrapper.setItem('toDos', toDos);
 }
 
 const createDiv = (): HTMLDivElement => {
   return document.createElement('div')
 }
 
-const renderTime = (): void => {
+const renderTime = () => {
   setInterval(() => {
     const time = dayjs().format('HH : mm : ss')
     const dateElement: HTMLDivElement | null = document.querySelector('#time')
@@ -216,7 +216,7 @@ const renderTime = (): void => {
   }, 1000)
 }
 
-const filterByStage = (stage: string): void => {
+const filterByStage = (stage: string) => {
   if (stage === 'All') {
     renderTable(toDos)
   } else {
@@ -225,7 +225,7 @@ const filterByStage = (stage: string): void => {
   }
 }
 
-const sortByDate = (sort: string, element: HTMLButtonElement): void => {
+const sortByDate = (sort: string, element: HTMLButtonElement) => {
   if (sort === 'Newest') {
     currentTable.sort((a, b) => b.created_at - a.created_at)
 
